@@ -12,24 +12,12 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _emailController = TextEditingController();
   bool _isLoading = false;
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _signIn() async {
+  Future<void> _signInAsGuest() async {
     setState(() => _isLoading = true);
     try {
-      await ref.read(authRepositoryProvider).signInWithEmail(_emailController.text.trim());
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Check your email for the login link!')),
-        );
-      }
+      await ref.read(authRepositoryProvider).signInAnonymously();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -70,33 +58,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
             const SizedBox(height: 60),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                hintText: 'Email',
-                filled: true,
-                fillColor: AppColors.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                hintStyle: GoogleFonts.inter(color: AppColors.subText),
-              ),
-              keyboardType: TextInputType.emailAddress,
-              style: GoogleFonts.inter(),
-            ),
-            const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _isLoading ? null : _signIn,
+              onPressed: _isLoading ? null : _signInAsGuest,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accent,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: _isLoading
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text('Send Magic Link', style: GoogleFonts.jetBrainsMono(fontWeight: FontWeight.bold)),
+                  ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : Text('ENTER AS GUEST', style: GoogleFonts.jetBrainsMono(fontWeight: FontWeight.bold, letterSpacing: 2)),
             ),
           ],
         ),
